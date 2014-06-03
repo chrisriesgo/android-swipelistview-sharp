@@ -31,6 +31,7 @@ using Android.Widget;
 using Android.Support.V4.View;
 using Android.Animation;
 using System.Threading.Tasks;
+using Android.Graphics.Drawables;
 
 namespace FortySevenDeg.SwipeListView
 {
@@ -40,6 +41,7 @@ namespace FortySevenDeg.SwipeListView
 
 		private int _swipeFrontView = 0;
 		private int swipeBackView = 0;
+		private int _swipeRevealDismissView = 0;
 
 		private Rect rect = new Rect();
 
@@ -77,9 +79,10 @@ namespace FortySevenDeg.SwipeListView
 		private bool _isFirstItem = false;
 		private bool _isLastItem = false;
 
-		public SwipeListViewTouchListener(SwipeListView swipeListView, int swipeFrontView, int swipeBackView) {
+		public SwipeListViewTouchListener(SwipeListView swipeListView, int swipeFrontView, int swipeBackView, int swipeRevealDismissView) {
 			this._swipeFrontView = swipeFrontView;
 			this.swipeBackView = swipeBackView;
+			_swipeRevealDismissView = swipeRevealDismissView;
 			ViewConfiguration vc = ViewConfiguration.Get(swipeListView.Context);
 			slop = vc.ScaledTouchSlop;
 			SwipeClosesAllItemsWhenListMoves = true;
@@ -95,6 +98,7 @@ namespace FortySevenDeg.SwipeListView
 			LeftOffset = 0;
 			RightOffset = 0;
 			ChoiceOffset = 0;
+			RevealDismissThreshold = 0;
 			SwipeDrawableChecked = 0;
 			SwipeDrawableUnchecked = 0;
 		}
@@ -127,6 +131,8 @@ namespace FortySevenDeg.SwipeListView
 			}
 		}
 
+		public View RevealDismissView { get; set; }
+
 		public bool IsListViewMoving { get; set; }
 
 		/// Sets animation time when the user drops the cell
@@ -148,6 +154,7 @@ namespace FortySevenDeg.SwipeListView
 		public float RightOffset { get; set; }
 		public float LeftOffset { get; set; }
 		public float ChoiceOffset { get; set; }
+		public float RevealDismissThreshold { get; set; }
 
 		/// Set if all items opened will be closed when the user moves ListView
 		public bool SwipeClosesAllItemsWhenListMoves { get; set; }
@@ -369,6 +376,9 @@ namespace FortySevenDeg.SwipeListView
 			if (swipeCurrentAction == (int)SwipeListView.SwipeAction.Choice) {
 				GenerateChoiceAnimate(view, position);
 			}
+			if (swipeCurrentAction == (int)SwipeListView.SwipeAction.RevealDismiss) {
+				GenerateRevealDismissAnimate(view, swap, swapRight, position);
+			}
 		}
 
 		/// <summary>
@@ -441,6 +451,48 @@ namespace FortySevenDeg.SwipeListView
 		/// <param name="swapRight">If set to <c>true</c> swap right.</param>
 		/// <param name="position">Position.</param>
 		private void GenerateRevealAnimate(View view, bool swap, bool swapRight, int position) {
+			int moveTo = 0;
+			if (Opened(position)) {
+				if (!swap) {
+					moveTo = OpenedRight(position) ? (int) (viewWidth - RightOffset) : (int) (-viewWidth + LeftOffset);
+				}
+			} else {
+				if (swap) {
+					moveTo = swapRight ? (int) (viewWidth - RightOffset) : (int) (-viewWidth + LeftOffset);
+				}
+			}
+
+			var listener = new ObjectAnimatorListenerAdapter();
+			listener.AnimationEnd = (animation) =>
+			{
+				_swipeListView.ResetScrolling();
+				if (swap) {
+					var aux = !Opened(position);
+					_opened[position] = aux;
+					if (aux) {
+						_swipeListView.OnOpened(position, swapRight);
+						_openedRight[position] = swapRight;
+					} else {
+						_swipeListView.OnClosed(position, OpenedRight(position));
+					}
+				}
+				ResetCell();
+			};
+
+			view.Animate()
+				.TranslationX(moveTo)
+				.SetDuration(_animationTime)
+				.SetListener(listener);
+		}
+
+		/// <summary>
+		/// Generates the reveal + dismiss animation.
+		/// </summary>
+		/// <param name="view">View.</param>
+		/// <param name="swap">If set to <c>true</c> swap.</param>
+		/// <param name="swapRight">If set to <c>true</c> swap right.</param>
+		/// <param name="position">Position.</param>
+		private void GenerateRevealDismissAnimate(View view, bool swap, bool swapRight, int position) {
 			int moveTo = 0;
 			if (Opened(position)) {
 				if (!swap) {
@@ -563,6 +615,18 @@ namespace FortySevenDeg.SwipeListView
 					|| (!swipingRight && deltaX > -ChoiceOffset)) {
 					FrontView.TranslationX = deltaX;
 				}
+			} else if (swipeCurrentAction == (int)SwipeListView.SwipeAction.RevealDismiss) {
+				var threshold = Math.Abs(deltaX) / viewWidth;
+				if(threshold > RevealDismissThreshold) 
+				{
+					BackView.Visibility = ViewStates.Gone;
+					RevealDismissView.Visibility = ViewStates.Visible;
+				}
+				else {
+					BackView.Visibility = ViewStates.Visible;
+					RevealDismissView.Visibility = ViewStates.Gone;
+				}
+				FrontView.TranslationX = deltaX;
 			} else {
 				FrontView.TranslationX = deltaX;
 			}
@@ -700,6 +764,10 @@ namespace FortySevenDeg.SwipeListView
 							if(swipeBackView > 0)
 							{
 								BackView = child.FindViewById(swipeBackView);
+							}
+							if(_swipeRevealDismissView > 0)
+							{
+								RevealDismissView = child.FindViewById(_swipeRevealDismissView);
 							}
 							break;
 						}
@@ -857,6 +925,14 @@ namespace FortySevenDeg.SwipeListView
 							else if (!swipingRight && SwipeActionLeft == (int)SwipeListView.SwipeAction.Choice) 
 							{
 								swipeCurrentAction = (int)SwipeListView.SwipeAction.Choice;
+							} 
+							else if (swipingRight && SwipeActionRight == (int)SwipeListView.SwipeAction.RevealDismiss) 
+							{
+								swipeCurrentAction = (int)SwipeListView.SwipeAction.RevealDismiss;
+							} 
+							else if (!swipingRight && SwipeActionLeft == (int)SwipeListView.SwipeAction.RevealDismiss) 
+							{
+								swipeCurrentAction = (int)SwipeListView.SwipeAction.RevealDismiss;
 							} 
 							else 
 							{

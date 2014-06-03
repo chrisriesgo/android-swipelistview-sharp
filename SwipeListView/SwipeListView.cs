@@ -52,8 +52,7 @@ namespace FortySevenDeg.SwipeListView
 		/**
 	     * Default id for back view
 	     */
-		public static String SWIPE_DEFAULT_LEFT_VIEW = "swipelist_leftview";
-		public static String SWIPE_DEFAULT_RIGHT_VIEW = "swipelist_rightview";
+		public static String SWIPE_DEFAULT_BACK_VIEW = "swipelist_backview";
 
 		public enum SwipeMode
 		{
@@ -66,10 +65,11 @@ namespace FortySevenDeg.SwipeListView
 
 		public enum SwipeAction
 		{
-			Reveal = 0,
-			Dismiss = 1,
-			Choice = 2,
-			None = 3
+			None = 0,
+			Reveal = 1,
+			Dismiss = 2,
+			Choice = 3,
+			RevealDismiss = 4
 		}
 
 		public enum TouchState
@@ -85,8 +85,8 @@ namespace FortySevenDeg.SwipeListView
 		private int touchSlop;
 
 		int _swipeFrontView = 0;
-		int _swipeLeftView = 0;
-		int _swipeRightView = 0;
+		int _swipeBackView = 0;
+		int _swipeRevealDismissView = 0;
 
 		//private ISwipeListViewListener _swipeListViewListener;
 		private SwipeListViewTouchListener _touchListener;
@@ -100,12 +100,10 @@ namespace FortySevenDeg.SwipeListView
 		{
 			Init(attrs);
 		}
-		public SwipeListView(Context context, int swipeBackView, int swipeFrontView) : this(context, swipeBackView, swipeBackView, swipeFrontView) { }
-		public SwipeListView(Context context, int swipeRightView, int swipeLeftView, int swipeFrontView) : base(context) 
+		public SwipeListView(Context context, int swipeBackView, int swipeFrontView) : base(context) 
 		{
-			_swipeRightView = swipeRightView;
-			_swipeLeftView = swipeLeftView;
 			_swipeFrontView = swipeFrontView;
+			_swipeBackView = swipeBackView;
 			Init(null);
 		}
 
@@ -116,6 +114,7 @@ namespace FortySevenDeg.SwipeListView
 			float swipeOffsetLeft = 0;
 			float swipeOffsetRight = 0;
 			float _choiceOffset = 80;
+			float _swipeRevealDismissThreshold = .6f;
 			var swipeMode = (int)SwipeMode.Both;
 			var swipeOpenOnLongPress = true;
 			var swipeCloseAllItemsWhenMoveList = true;
@@ -134,6 +133,7 @@ namespace FortySevenDeg.SwipeListView
 				swipeOffsetLeft = styled.GetDimension(Resource.Styleable.SwipeListView_swipeOffsetLeft, 0);
 				swipeOffsetRight = styled.GetDimension(Resource.Styleable.SwipeListView_swipeOffsetRight, 0);
 				_choiceOffset = styled.GetDimension(Resource.Styleable.SwipeListView_choiceOffset, _choiceOffset);
+				_swipeRevealDismissThreshold = styled.GetFloat(Resource.Styleable.SwipeListView_swipeRevealDismissThreshold, _swipeRevealDismissThreshold);
 				swipeOpenOnLongPress = styled.GetBoolean(Resource.Styleable.SwipeListView_swipeOpenOnLongPress, true);
 				swipeAnimationTime = styled.GetInt(Resource.Styleable.SwipeListView_swipeAnimationTime, 0);
 				swipeCloseAllItemsWhenMoveList = styled.GetBoolean(Resource.Styleable.SwipeListView_swipeCloseAllItemsWhenMoveList, true);
@@ -141,24 +141,22 @@ namespace FortySevenDeg.SwipeListView
 				swipeDrawableUnchecked = styled.GetResourceId(Resource.Styleable.SwipeListView_swipeDrawableUnchecked, 0);
 
 				_swipeFrontView = styled.GetResourceId(Resource.Styleable.SwipeListView_swipeFrontView, 0);
-				_swipeLeftView = styled.GetResourceId(Resource.Styleable.SwipeListView_swipeBackView, 0);
-				_swipeRightView = styled.GetResourceId(Resource.Styleable.SwipeListView_swipeBackView, 0);
+				_swipeBackView = styled.GetResourceId(Resource.Styleable.SwipeListView_swipeBackView, 0);
+				_swipeRevealDismissView = styled.GetResourceId(Resource.Styleable.SwipeListView_swipeRevealDismissView, 0);
 			}
 
-			if (_swipeFrontView == 0 || _swipeLeftView == 0 || _swipeRightView == 0) {
+			if (_swipeFrontView == 0 || _swipeBackView == 0) {
 				_swipeFrontView = Context.Resources.GetIdentifier(SWIPE_DEFAULT_FRONT_VIEW, "id", Context.PackageName);
-				_swipeLeftView = Context.Resources.GetIdentifier(SWIPE_DEFAULT_LEFT_VIEW, "id", Context.PackageName);
-				_swipeRightView = Context.Resources.GetIdentifier(SWIPE_DEFAULT_RIGHT_VIEW, "id", Context.PackageName);
+				_swipeBackView = Context.Resources.GetIdentifier(SWIPE_DEFAULT_BACK_VIEW, "id", Context.PackageName);
 
-				if (_swipeFrontView == 0 || _swipeLeftView == 0 || _swipeRightView == 0) {
-					throw new Exception(String.Format("You forgot the attributes swipeFrontView, swipeLeftView, or swipeRightView. You can add these attributes or use '{0}', '{1}', and '{2}' identifiers", SWIPE_DEFAULT_FRONT_VIEW, SWIPE_DEFAULT_LEFT_VIEW, SWIPE_DEFAULT_RIGHT_VIEW));
+				if (_swipeFrontView == 0 || _swipeBackView == 0) {
+					throw new Exception(String.Format("You forgot the attributes swipeFrontView or swipeBackView. You can add these attributes or use '{0}' and '{1}' identifiers", SWIPE_DEFAULT_FRONT_VIEW, SWIPE_DEFAULT_BACK_VIEW));
 				}
 			}
 
 			ViewConfiguration configuration = ViewConfiguration.Get(Context);
 			touchSlop = ViewConfigurationCompat.GetScaledPagingTouchSlop(configuration);
-			// TODO: Update signature to accept Left & Right back views
-			_touchListener = new SwipeListViewTouchListener(this, _swipeFrontView, _swipeLeftView);
+			_touchListener = new SwipeListViewTouchListener(this, _swipeFrontView, _swipeBackView, _swipeRevealDismissView);
 
 			if (swipeAnimationTime > 0) {
 				_touchListener.AnimationTime = swipeAnimationTime;
@@ -166,6 +164,7 @@ namespace FortySevenDeg.SwipeListView
 			_touchListener.RightOffset = swipeOffsetRight;
 			_touchListener.LeftOffset = swipeOffsetLeft;
 			_touchListener.ChoiceOffset = _choiceOffset;
+			_touchListener.RevealDismissThreshold = _swipeRevealDismissThreshold;
 			_touchListener.SwipeActionLeft = swipeActionLeft;
 			_touchListener.SwipeActionRight = swipeActionRight;
 			_touchListener.SwipeMode = swipeMode;

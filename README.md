@@ -18,8 +18,8 @@ If you decide to use SwipeListView as a view, you can define it in your xml layo
             android:layout_height="wrap_content"
             swipe:swipeFrontView="@+id/front"
             swipe:swipeBackView="@+id/back"
-            swipe:swipeActionLeft="[reveal | dismiss]"
-            swipe:swipeActionRight="[reveal | dismiss]"
+            swipe:swipeActionLeft="[reveal | dismiss | choice | revealdismiss]"
+            swipe:swipeActionRight="[reveal | dismiss | choice | revealdismiss]"
             swipe:swipeMode="[none | both | right | left]"
             swipe:swipeCloseAllItemsWhenMoveList="[true | false]"
             swipe:swipeOpenOnLongPress="[true | false]"
@@ -27,11 +27,13 @@ If you decide to use SwipeListView as a view, you can define it in your xml layo
             swipe:swipeOffsetLeft="[dimension]"
             swipe:swipeOffsetRight="[dimension]"
             swipe:choiceOffset="[dimension]"
+            swipe:swipeRevealDismissThreshold="[float]"
             />
 ```
 
 * `swipeFrontView` - **Required** - front view id.
 * `swipeBackView` - **Required** - back view id.
+* `swipeRevealDismissView` - view that appears when in RevealDismiss mode when the swipeRevealDismissThreshold is reached
 * `swipeActionLeft` - Optional - left swipe action Default: 'reveal'
 * `swipeActionRight` - Optional - right swipe action Default: 'reveal'
 * `swipeMode` - Gestures to enable or 'none'. Default: 'both'
@@ -41,6 +43,7 @@ If you decide to use SwipeListView as a view, you can define it in your xml layo
 * `swipeOffsetLeft` - left offset
 * `swipeOffsetRight` - right offset
 * `choiceOffset` - choice toggle offset
+* `swipeRevealDismissThreshold` - percent of swipe across the screen until the swipeRevealDismissView appears
 
 # License
 
