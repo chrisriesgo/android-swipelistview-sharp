@@ -24,7 +24,7 @@ If you decide to use SwipeListView as a view, you can define it in your xml layo
             swipe:swipeMode="[none | both | right | left]"
             swipe:swipeCloseAllItemsWhenMoveList="[true | false]"
             swipe:swipeOpenOnLongPress="[true | false]"
-            swipe:swipeAnimationTime="[miliseconds]"
+            swipe:swipeAnimationTime="[milliseconds]"
             swipe:swipeOffsetLeft="[dimension]"
             swipe:swipeOffsetRight="[dimension]"
             swipe:choiceOffset="[dimension]"
