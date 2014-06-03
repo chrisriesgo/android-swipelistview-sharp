@@ -505,24 +505,26 @@ namespace FortySevenDeg.SwipeListView
 			}
 
 			var listener = new ObjectAnimatorListenerAdapter();
-			listener.AnimationEnd = (animation) =>
+
+			int alpha = 1;
+			if (swap) {
+				++dismissAnimationRefCount;
+				alpha = 0;
+			}
+
+			listener.AnimationEnd = async (animation) =>
 			{
-				_swipeListView.ResetScrolling();
-				if (swap) {
-					var aux = !Opened(position);
-					_opened[position] = aux;
-					if (aux) {
-						_swipeListView.OnOpened(position, swapRight);
-						_openedRight[position] = swapRight;
-					} else {
-						_swipeListView.OnClosed(position, OpenedRight(position));
-					}
+				if(swap) {
+					CloseOpenedItems();
+					await Task.Delay(Convert.ToInt32(AnimationTime));
+					PerformDismiss(view, position, true);
 				}
 				ResetCell();
 			};
 
 			view.Animate()
 				.TranslationX(moveTo)
+				.Alpha(alpha)
 				.SetDuration(_animationTime)
 				.SetListener(listener);
 		}
