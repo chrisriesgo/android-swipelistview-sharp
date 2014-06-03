@@ -18,6 +18,7 @@ If you decide to use SwipeListView as a view, you can define it in your xml layo
             android:layout_height="wrap_content"
             swipe:swipeFrontView="@+id/front"
             swipe:swipeBackView="@+id/back"
+            swipe:swipeRevealDismissView="@+id/revealDismiss"
             swipe:swipeActionLeft="[reveal | dismiss | choice | revealdismiss]"
             swipe:swipeActionRight="[reveal | dismiss | choice | revealdismiss]"
             swipe:swipeMode="[none | both | right | left]"
