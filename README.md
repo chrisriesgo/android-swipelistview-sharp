@@ -10,7 +10,7 @@ An Android List View implementation with support for drawable cells and many oth
 If you decide to use SwipeListView as a view, you can define it in your xml layout like this:
 
 ```xml
-	<com.fortysevendeg.swipelistview.SwipeListView
+	<fortysevendeg.swipelistview.SwipeListView
             xmlns:swipe="http://schemas.android.com/apk/res-auto"
             android:id="@+id/example_lv_list"
             android:listSelector="#00000000"
