@@ -6,7 +6,7 @@ This is a C# port of the [47 Degrees Swipe List View](https://github.com/47deg/a
 An Android List View implementation with support for drawable cells and many other swipe related features.
 
 #XML Usage
-----------
+
 If you decide to use SwipeListView as a view, you can define it in your xml layout like this:
 
 ```xml
