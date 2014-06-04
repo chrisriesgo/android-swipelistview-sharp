@@ -209,6 +209,8 @@ namespace FortySevenDeg.SwipeListView
 				return list;
 			}
 		}
+
+		public bool SwipeAllowFling { get; set; }
 		#endregion 
 
 		public bool OpenedRight(int position)
@@ -817,12 +819,12 @@ namespace FortySevenDeg.SwipeListView
 						{
 							swap = false;
 						}
-						else
+						else if(SwipeAllowFling)
 						{
 							swap = true;
 						}
 					}
-					else if(Math.Abs(deltaX) > viewWidth / 2)
+					else if((swipeCurrentAction == (int)SwipeListView.SwipeAction.RevealDismiss && Math.Abs(deltaX) > (RevealDismissThreshold * viewWidth)) || (swipeCurrentAction != (int)SwipeListView.SwipeAction.RevealDismiss && Math.Abs(deltaX) > viewWidth / 2))
 					{
 						swap = true;
 						swapRight = deltaX > 0;

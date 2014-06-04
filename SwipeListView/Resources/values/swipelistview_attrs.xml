@@ -51,6 +51,7 @@
         <attr name="swipeDrawableChecked" format="reference"/>
         <attr name="swipeDrawableUnchecked" format="reference"/>
         <attr name="swipeRevealDismissThreshold" format="float"/>
+        <attr name="swipeAllowFling" format="boolean"/>
     </declare-styleable>
 
 </resources>

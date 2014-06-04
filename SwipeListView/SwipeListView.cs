@@ -120,6 +120,7 @@ namespace FortySevenDeg.SwipeListView
 			var swipeCloseAllItemsWhenMoveList = true;
 			var swipeDrawableChecked = 0;
 			var swipeDrawableUnchecked = 0;
+			var swipeAllowFling = true;
 
 			var swipeActionLeft = (int)SwipeAction.Reveal;
 			var swipeActionRight = (int)SwipeAction.Reveal;
@@ -134,11 +135,12 @@ namespace FortySevenDeg.SwipeListView
 				swipeOffsetRight = styled.GetDimension(Resource.Styleable.SwipeListView_swipeOffsetRight, 0);
 				_choiceOffset = styled.GetDimension(Resource.Styleable.SwipeListView_choiceOffset, _choiceOffset);
 				_swipeRevealDismissThreshold = styled.GetFloat(Resource.Styleable.SwipeListView_swipeRevealDismissThreshold, _swipeRevealDismissThreshold);
-				swipeOpenOnLongPress = styled.GetBoolean(Resource.Styleable.SwipeListView_swipeOpenOnLongPress, true);
+				swipeOpenOnLongPress = styled.GetBoolean(Resource.Styleable.SwipeListView_swipeOpenOnLongPress, swipeOpenOnLongPress);
 				swipeAnimationTime = styled.GetInt(Resource.Styleable.SwipeListView_swipeAnimationTime, 0);
 				swipeCloseAllItemsWhenMoveList = styled.GetBoolean(Resource.Styleable.SwipeListView_swipeCloseAllItemsWhenMoveList, true);
 				swipeDrawableChecked = styled.GetResourceId(Resource.Styleable.SwipeListView_swipeDrawableChecked, 0);
 				swipeDrawableUnchecked = styled.GetResourceId(Resource.Styleable.SwipeListView_swipeDrawableUnchecked, 0);
+				swipeAllowFling = styled.GetBoolean(Resource.Styleable.SwipeListView_swipeAllowFling, swipeAllowFling);
 
 				_swipeFrontView = styled.GetResourceId(Resource.Styleable.SwipeListView_swipeFrontView, 0);
 				_swipeBackView = styled.GetResourceId(Resource.Styleable.SwipeListView_swipeBackView, 0);
@@ -172,6 +174,7 @@ namespace FortySevenDeg.SwipeListView
 			_touchListener.SwipeOpenOnLongPress = swipeOpenOnLongPress;
 			_touchListener.SwipeDrawableChecked = swipeDrawableChecked;
 			_touchListener.SwipeDrawableUnchecked = swipeDrawableUnchecked;
+			_touchListener.SwipeAllowFling = swipeAllowFling;
 			SetOnTouchListener(_touchListener);
 			SetOnScrollListener(_touchListener);
 		}
