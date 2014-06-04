@@ -19,26 +19,19 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
-using Android.App;
-using Android.Content;
 using Android.Graphics;
 using Android.OS;
-using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Android.Support.V4.View;
 using Android.Animation;
 using System.Threading.Tasks;
-using Android.Graphics.Drawables;
 
 namespace FortySevenDeg.SwipeListView
 {
 	public class SwipeListViewTouchListener : Java.Lang.Object, View.IOnTouchListener, AbsListView.IOnScrollListener
 	{
-		//private static int DISPLACE_CHOICE = 80;
-
 		private int _swipeFrontView = 0;
 		private int swipeBackView = 0;
 		private int _swipeRevealDismissView = 0;
@@ -1028,25 +1021,6 @@ namespace FortySevenDeg.SwipeListView
 			}
 		}
 		#endregion
-
-//		#region IDisposable implementation
-//		public void Dispose()
-//		{
-//			//	base.Dispose;
-//			//throw new NotImplementedException();
-//		}
-//		#endregion
-//
-//		#region IJavaObject implementation
-//		public IntPtr Handle
-//		{
-//			get
-//			{
-//				return base.Handle;
-//				//throw new NotImplementedException();
-//			}
-//		}
-//		#endregion
 	}
 
 	public class PendingDismissData : IComparable
@@ -1098,22 +1072,6 @@ namespace FortySevenDeg.SwipeListView
 			AnimationUpdate(valueAnimator);
 		}
 		#endregion
-//		#region IDisposable implementation
-//		public void Dispose()
-//		{
-//			base.Dispose();
-//		}
-//		#endregion
-//		#region IJavaObject implementation
-//		public IntPtr Handle
-//		{
-//			get
-//			{
-//				return base.Handle;
-//				//throw new NotImplementedException();
-//			}
-//		}
-//		#endregion
 	}
 }
 
