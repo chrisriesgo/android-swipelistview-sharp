@@ -222,12 +222,8 @@ namespace FortySevenDeg.SwipeListView
 			if (_swipeListView.Adapter != null) {
 				int count = _swipeListView.Adapter.Count;
 				for (int i = _opened.Count; i <= count; i++) {
-//					_opened.Add(false);
-//					_openedRight.Add(false);
-//					_checked.Add(false);
-
-					_opened[i] = false;//.Add(false);
-					_openedRight[i] = false;//.Add(false);
+					_opened[i] = false;
+					_openedRight[i] = false;
 					_checked[i] = false;
 				}
 			}

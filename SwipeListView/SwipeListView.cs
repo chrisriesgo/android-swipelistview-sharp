@@ -337,10 +337,6 @@ namespace FortySevenDeg.SwipeListView
 			}
 		}
 
-
-
-
-
 		public int ChangeSwipeMode(int position) {
 			if (SwipeListViewListener != null && position != ListView.InvalidPosition) {
 				return SwipeListViewListener.OnChangeSwipeMode(position);
