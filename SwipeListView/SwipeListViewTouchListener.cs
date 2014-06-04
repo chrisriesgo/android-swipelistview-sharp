@@ -620,7 +620,8 @@ namespace FortySevenDeg.SwipeListView
 					RevealDismissView.Visibility = ViewStates.Gone;
 				}
 				FrontView.TranslationX = deltaX;
-			} else {
+			} 
+			else {
 				FrontView.TranslationX = deltaX;
 			}
 		}
@@ -950,7 +951,10 @@ namespace FortySevenDeg.SwipeListView
 						{
 							deltaX += OpenedRight(downPosition) ? viewWidth - RightOffset : -viewWidth + LeftOffset;
 						}
-						Move(deltaX);
+						if(deltaMode != 0f)
+						{
+							Move(deltaX);
+						}
 						return true;
 					}
 					break;

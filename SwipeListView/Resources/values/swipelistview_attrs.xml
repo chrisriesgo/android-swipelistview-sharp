@@ -39,14 +39,14 @@
             <enum name="reveal" value="1"/>
             <enum name="dismiss" value="2"/>
             <enum name="choice" value="3"/>
-            <enum name="revealdismiss" value="4"/>
+            <enum name="revealDismiss" value="4"/>
         </attr>
         <attr name="swipeActionRight" format="enum">
             <enum name="none" value="0"/>
             <enum name="reveal" value="1"/>
             <enum name="dismiss" value="2"/>
             <enum name="choice" value="3"/>
-            <enum name="revealdismiss" value="4"/>
+            <enum name="revealDismiss" value="4"/>
         </attr>
         <attr name="swipeDrawableChecked" format="reference"/>
         <attr name="swipeDrawableUnchecked" format="reference"/>
