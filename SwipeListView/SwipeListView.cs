@@ -240,14 +240,17 @@ namespace FortySevenDeg.SwipeListView
 				base.Adapter = value;
 				_touchListener.ResetItems();
 
-				var observer = new ObjectDataSetObserver();
-				observer.Changed = () =>
+				if(base.Adapter != null)
 				{
-					OnListChanged();
-					_touchListener.ResetItems();
-				};
+					var observer = new ObjectDataSetObserver();
+					observer.Changed = () =>
+					{
+						OnListChanged();
+						_touchListener.ResetItems();
+					};
 
-				base.Adapter.RegisterDataSetObserver(observer);
+					base.Adapter.RegisterDataSetObserver(observer);
+				}
 			}
 		}
 		#endregion
