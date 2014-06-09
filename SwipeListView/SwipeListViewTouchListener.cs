@@ -814,6 +814,10 @@ namespace FortySevenDeg.SwipeListView
 							swap = true;
 						}
 					}
+					else if(velocityX > maxFlingVelocity)
+					{
+						swap = false;
+					}
 					else if((swipeCurrentAction == (int)SwipeListView.SwipeAction.RevealDismiss && Math.Abs(deltaX) > (RevealDismissThreshold * viewWidth)) || (swipeCurrentAction != (int)SwipeListView.SwipeAction.RevealDismiss && Math.Abs(deltaX) > viewWidth / 2))
 					{
 						swap = true;
