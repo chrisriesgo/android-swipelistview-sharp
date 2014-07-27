@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FortySevenDeg.SwipeListView", "SwipeListView\FortySevenDeg.SwipeListView.csproj", "{252BC5DF-CB5E-4B68-B5E6-2FA96004E54C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SwipeListViewSample", "SwipeListViewSample\SwipeListViewSample.csproj", "{62C5EDE6-0F05-4A3D-A414-CF4224AA25B7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,8 +15,12 @@ Global
 		{252BC5DF-CB5E-4B68-B5E6-2FA96004E54C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{252BC5DF-CB5E-4B68-B5E6-2FA96004E54C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{252BC5DF-CB5E-4B68-B5E6-2FA96004E54C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{62C5EDE6-0F05-4A3D-A414-CF4224AA25B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{62C5EDE6-0F05-4A3D-A414-CF4224AA25B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{62C5EDE6-0F05-4A3D-A414-CF4224AA25B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{62C5EDE6-0F05-4A3D-A414-CF4224AA25B7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = SwipeListView\FortySevenDeg.SwipeListView.csproj
+		StartupItem = SwipeListViewSample\SwipeListViewSample.csproj
 	EndGlobalSection
 EndGlobal
