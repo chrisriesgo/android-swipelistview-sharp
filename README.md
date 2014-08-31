@@ -1,9 +1,11 @@
 SwipeListView | C#
 ===========================
 
-This is a C# port of the [47 Degrees Swipe List View](https://github.com/47deg/android-swipelistview). 
+This is a C# binding of the [47 Degrees Swipe List View](https://github.com/47deg/android-swipelistview). 
 
-An Android List View implementation with support for drawable cells and many other swipe related features.
+The Swipe List View is an Android List View implementation with support for drawable cells and many other swipe related features. This control simplifies the building of lists in Android that support swipe gestures on the list items. Swipe Modes:
+* Left* Right* Both* NoneSwipe Actions:
+* Reveal - Swipe to reveal a view behind the list item* Dismiss - Swipe to remove a list item from the list* Choice - Swipe with a rubber band-like behavior that toggles the selected state of the list item* RevealDismiss - Swipe to reveal a view behind the list item before removing the list item from the list
 
 #XML Usage
 
