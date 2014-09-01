@@ -1,8 +1,6 @@
 ﻿using System;
 
 using Android.App;
-using Android.Content;
-using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Android.OS;
@@ -11,8 +9,6 @@ using System.Linq;
 using Android.Support.V4.App;
 using Android.Graphics.Drawables;
 using FortySevenDeg.SwipeListView;
-using Android.Views.Animations;
-using System.Threading.Tasks;
 
 namespace SwipeListViewSample
 {
@@ -32,7 +28,7 @@ namespace SwipeListViewSample
 			// and attach an event to it
 			_swipeListView = FindViewById<SwipeListView>(Resource.Id.example_lv_list);
 
-			var adapter = new SpeakersAdapter(this, Speakers.GetSpeakerData());
+			var adapter = new SpeakersAdapter(this, Dogs.GetDogData());
 
 			_swipeListView.SwipeListViewListener = SetupListener(adapter);
 			_swipeListView.Adapter = adapter;	
@@ -48,20 +44,20 @@ namespace SwipeListViewSample
 					adapter.RemoveView(i);
 				}
 			};
-			listener.OnClickFrontView = (position) => Toast.MakeText(this, string.Format("Open item {0}", position), ToastLength.Short).Show();
-			listener.OnClickBackView = _swipeListView.Close;
+			listener.OnClickFrontView = (position) => RunOnUiThread(() => _swipeListView.Open(position));
+			listener.OnClickBackView = (position) => RunOnUiThread(() => _swipeListView.Close(position));
 
 			return listener;
 		}
 	}
 
 
-	public class SpeakersAdapter: BaseAdapter<Speaker>
+	public class SpeakersAdapter: BaseAdapter<Dog>
 	{
-		private readonly List<Speaker> data;
+		private readonly List<Dog> data;
 		private readonly Activity context;
 
-		public SpeakersAdapter(Activity activity, IEnumerable<Speaker> speakers)
+		public SpeakersAdapter(Activity activity, IEnumerable<Dog> speakers)
 		{
 			data = speakers.OrderBy(s => s.Name).ToList();
 			context = activity;
@@ -72,7 +68,7 @@ namespace SwipeListViewSample
 			return position;
 		}
 
-		public override Speaker this [int index] {
+		public override Dog this [int index] {
 			get { return data[index]; }
 		}
 
@@ -89,23 +85,22 @@ namespace SwipeListViewSample
 		public override View GetView(int position, View convertView, ViewGroup parent)
 		{
 			var view = convertView;
-			if (view == null) {
+			if(view == null)
+			{
 				// inflate the custom AXML layout
 				view = context.LayoutInflater.Inflate(Resource.Layout.package_row, null);
 			}
 
 			((SwipeListView)parent).Recycle(view, position);
 
-			var speaker = data[position];
+			var dog = data[position];
 
 			var ivImage = view.FindViewById<ImageView>(Resource.Id.example_row_iv_image);
 			var tvTitle = view.FindViewById<TextView>(Resource.Id.example_row_tv_title);
-			var tvDescription = view.FindViewById<TextView>(Resource.Id.example_row_tv_description);
 
-			var headshot = GetHeadShot(speaker.HeadshotUrl);
-			ivImage.SetImageDrawable(headshot);
-			tvTitle.Text = speaker.Name;
-			tvDescription.Text = speaker.Company;
+			var image = GetHeadShot(dog.ImageUrl);
+			ivImage.SetImageDrawable(image);
+			tvTitle.Text = dog.Name;
 
 			view.Click += (sender, e) => 
 			{
