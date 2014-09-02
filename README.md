@@ -5,7 +5,7 @@ This is a C# binding of the [47 Degrees Swipe List View](https://github.com/47de
 
 The Swipe List View is an Android List View implementation with support for drawable cells and many other swipe related features. This control simplifies the building of lists in Android that support swipe gestures on the list items. Swipe Modes:
 * Left* Right* Both* NoneSwipe Actions:
-* Reveal - Swipe to reveal a view behind the list item* Dismiss - Swipe to remove a list item from the list* Choice - Swipe with a rubber band-like behavior that toggles the selected state of the list item* RevealDismiss - Swipe to reveal a view behind the list item before removing the list item from the list
+* Reveal - Swipe to reveal a view behind the list item* Dismiss - Swipe to remove a list item from the list* Choice - Swipe with a rubber band-like behavior that toggles the selected state of the list item
 
 #XML Usage
 
@@ -20,23 +20,19 @@ If you decide to use SwipeListView as a view, you can define it in your xml layo
             android:layout_height="wrap_content"
             swipe:swipeFrontView="@+id/front"
             swipe:swipeBackView="@+id/back"
-            swipe:swipeRevealDismissView="@+id/revealDismiss"
-            swipe:swipeActionLeft="[reveal | dismiss | choice | revealdismiss]"
-            swipe:swipeActionRight="[reveal | dismiss | choice | revealdismiss]"
+            swipe:swipeActionLeft="[reveal | dismiss | choice]"
+            swipe:swipeActionRight="[reveal | dismiss | choice]"
             swipe:swipeMode="[none | both | right | left]"
             swipe:swipeCloseAllItemsWhenMoveList="[true | false]"
             swipe:swipeOpenOnLongPress="[true | false]"
             swipe:swipeAnimationTime="[milliseconds]"
             swipe:swipeOffsetLeft="[dimension]"
             swipe:swipeOffsetRight="[dimension]"
-            swipe:choiceOffset="[dimension]"
-            swipe:swipeRevealDismissThreshold="[float]"
             />
 ```
 
 * `swipeFrontView` - **Required** - front view id.
 * `swipeBackView` - **Required** - back view id.
-* `swipeRevealDismissView` - view that appears when in RevealDismiss mode when the swipeRevealDismissThreshold is reached
 * `swipeActionLeft` - Optional - left swipe action Default: 'reveal'
 * `swipeActionRight` - Optional - right swipe action Default: 'reveal'
 * `swipeMode` - Gestures to enable or 'none'. Default: 'both'
@@ -45,8 +41,6 @@ If you decide to use SwipeListView as a view, you can define it in your xml layo
 * `swipeAnimationTime` - item drop animation time. Default: android configuration
 * `swipeOffsetLeft` - left offset
 * `swipeOffsetRight` - right offset
-* `choiceOffset` - choice toggle offset
-* `swipeRevealDismissThreshold` - percent of swipe across the screen until the swipeRevealDismissView appears
 
 # License
 
