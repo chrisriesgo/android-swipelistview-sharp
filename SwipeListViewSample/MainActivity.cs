@@ -12,7 +12,7 @@ using FortySevenDeg.SwipeListView;
 
 namespace SwipeListViewSample
 {
-	[Activity(Label = "SwipeListView", MainLauncher = true)]
+	[Activity(Label = "Swipe ListView", MainLauncher = true)]
 	public class MainActivity : FragmentActivity
 	{
 		SwipeListView _swipeListView;
@@ -23,18 +23,19 @@ namespace SwipeListViewSample
 
 			// Set our view from the "main" layout resource
 			SetContentView(Resource.Layout.Main);
+			ActionBar.SetIcon(new ColorDrawable(Android.Graphics.Color.Transparent));
 
 			// Get our button from the layout resource,
 			// and attach an event to it
 			_swipeListView = FindViewById<SwipeListView>(Resource.Id.example_lv_list);
 
-			var adapter = new SpeakersAdapter(this, Dogs.GetDogData());
+			var adapter = new DogsAdapter(this, Dogs.GetDogData());
 
 			_swipeListView.SwipeListViewListener = SetupListener(adapter);
 			_swipeListView.Adapter = adapter;	
 		}
 
-		private ISwipeListViewListener SetupListener(SpeakersAdapter adapter)
+		private ISwipeListViewListener SetupListener(DogsAdapter adapter)
 		{
 			var listener = new SwipeListViewListener();
 			listener.OnDismiss = (reverseSortedPosition) =>
@@ -52,12 +53,12 @@ namespace SwipeListViewSample
 	}
 
 
-	public class SpeakersAdapter: BaseAdapter<Dog>
+	public class DogsAdapter: BaseAdapter<Dog>
 	{
 		private readonly List<Dog> data;
 		private readonly Activity context;
 
-		public SpeakersAdapter(Activity activity, IEnumerable<Dog> speakers)
+		public DogsAdapter(Activity activity, IEnumerable<Dog> speakers)
 		{
 			data = speakers.OrderBy(s => s.Name).ToList();
 			context = activity;
