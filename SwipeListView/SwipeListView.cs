@@ -63,8 +63,7 @@ namespace FortySevenDeg.SwipeListView
 			None = 0,
 			Reveal = 1,
 			Dismiss = 2,
-			Choice = 3,
-			RevealDismiss = 4
+			Choice = 3
 		}
 
 		public enum TouchState
@@ -81,9 +80,7 @@ namespace FortySevenDeg.SwipeListView
 
 		int _swipeFrontView = 0;
 		int _swipeBackView = 0;
-		int _swipeRevealDismissView = 0;
 
-		//private ISwipeListViewListener _swipeListViewListener;
 		private SwipeListViewTouchListener _touchListener;
 
 		public SwipeListView(IntPtr ptr, JniHandleOwnership handler) : base(ptr, handler) { }
@@ -108,14 +105,11 @@ namespace FortySevenDeg.SwipeListView
 			long swipeAnimationTime = 0;
 			float swipeOffsetLeft = 0;
 			float swipeOffsetRight = 0;
-			float _choiceOffset = 80;
-			float _swipeRevealDismissThreshold = .6f;
 			var swipeMode = (int)SwipeMode.Both;
 			var swipeOpenOnLongPress = true;
 			var swipeCloseAllItemsWhenMoveList = true;
 			var swipeDrawableChecked = 0;
 			var swipeDrawableUnchecked = 0;
-			var swipeAllowFling = true;
 
 			var swipeActionLeft = (int)SwipeAction.Reveal;
 			var swipeActionRight = (int)SwipeAction.Reveal;
@@ -128,18 +122,18 @@ namespace FortySevenDeg.SwipeListView
 				swipeActionRight = styled.GetInt(Resource.Styleable.SwipeListView_swipeActionRight, (int)SwipeAction.Reveal);
 				swipeOffsetLeft = styled.GetDimension(Resource.Styleable.SwipeListView_swipeOffsetLeft, 0);
 				swipeOffsetRight = styled.GetDimension(Resource.Styleable.SwipeListView_swipeOffsetRight, 0);
-				_choiceOffset = styled.GetDimension(Resource.Styleable.SwipeListView_choiceOffset, _choiceOffset);
-				_swipeRevealDismissThreshold = styled.GetFloat(Resource.Styleable.SwipeListView_swipeRevealDismissThreshold, _swipeRevealDismissThreshold);
+//				_choiceOffset = styled.GetDimension(Resource.Styleable.SwipeListView_choiceOffset, _choiceOffset);
+//				_swipeRevealDismissThreshold = styled.GetFloat(Resource.Styleable.SwipeListView_swipeRevealDismissThreshold, _swipeRevealDismissThreshold);
 				swipeOpenOnLongPress = styled.GetBoolean(Resource.Styleable.SwipeListView_swipeOpenOnLongPress, swipeOpenOnLongPress);
 				swipeAnimationTime = styled.GetInt(Resource.Styleable.SwipeListView_swipeAnimationTime, 0);
 				swipeCloseAllItemsWhenMoveList = styled.GetBoolean(Resource.Styleable.SwipeListView_swipeCloseAllItemsWhenMoveList, true);
 				swipeDrawableChecked = styled.GetResourceId(Resource.Styleable.SwipeListView_swipeDrawableChecked, 0);
 				swipeDrawableUnchecked = styled.GetResourceId(Resource.Styleable.SwipeListView_swipeDrawableUnchecked, 0);
-				swipeAllowFling = styled.GetBoolean(Resource.Styleable.SwipeListView_swipeAllowFling, swipeAllowFling);
+//				swipeAllowFling = styled.GetBoolean(Resource.Styleable.SwipeListView_swipeAllowFling, swipeAllowFling);
 
 				_swipeFrontView = styled.GetResourceId(Resource.Styleable.SwipeListView_swipeFrontView, 0);
 				_swipeBackView = styled.GetResourceId(Resource.Styleable.SwipeListView_swipeBackView, 0);
-				_swipeRevealDismissView = styled.GetResourceId(Resource.Styleable.SwipeListView_swipeRevealDismissView, 0);
+//				_swipeRevealDismissView = styled.GetResourceId(Resource.Styleable.SwipeListView_swipeRevealDismissView, 0);
 			}
 
 			if (_swipeFrontView == 0 || _swipeBackView == 0) {
@@ -153,15 +147,15 @@ namespace FortySevenDeg.SwipeListView
 
 			ViewConfiguration configuration = ViewConfiguration.Get(Context);
 			touchSlop = ViewConfigurationCompat.GetScaledPagingTouchSlop(configuration);
-			_touchListener = new SwipeListViewTouchListener(this, _swipeFrontView, _swipeBackView, _swipeRevealDismissView);
+			_touchListener = new SwipeListViewTouchListener(this, _swipeFrontView, _swipeBackView);
 
 			if (swipeAnimationTime > 0) {
 				_touchListener.AnimationTime = swipeAnimationTime;
 			}
 			_touchListener.RightOffset = swipeOffsetRight;
 			_touchListener.LeftOffset = swipeOffsetLeft;
-			_touchListener.ChoiceOffset = _choiceOffset;
-			_touchListener.RevealDismissThreshold = _swipeRevealDismissThreshold;
+//			_touchListener.ChoiceOffset = _choiceOffset;
+//			_touchListener.RevealDismissThreshold = _swipeRevealDismissThreshold;
 			_touchListener.SwipeActionLeft = swipeActionLeft;
 			_touchListener.SwipeActionRight = swipeActionRight;
 			_touchListener.SwipeMode = swipeMode;
@@ -169,7 +163,7 @@ namespace FortySevenDeg.SwipeListView
 			_touchListener.SwipeOpenOnLongPress = swipeOpenOnLongPress;
 			_touchListener.SwipeDrawableChecked = swipeDrawableChecked;
 			_touchListener.SwipeDrawableUnchecked = swipeDrawableUnchecked;
-			_touchListener.SwipeAllowFling = swipeAllowFling;
+//			_touchListener.SwipeAllowFling = swipeAllowFling;
 			SetOnTouchListener(_touchListener);
 			SetOnScrollListener(_touchListener);
 		}
@@ -181,7 +175,15 @@ namespace FortySevenDeg.SwipeListView
 		/// <param name="position">Position.</param>
 		public void Recycle(View convertView, int position) {
 			_touchListener.ReloadChoiceStateInView(convertView.FindViewById(_swipeFrontView), position);
-			_touchListener.ReloadSwipeStateInView(convertView.FindViewById(_swipeFrontView));
+			_touchListener.ReloadSwipeStateInView(convertView.FindViewById(_swipeFrontView), position);
+
+			// Clean pressed state (if dismiss is fire from a cell, to this cell, with a press drawable, in a swipelistview
+			// when this cell will be recycle it will still have his pressed state. This ensure the pressed state is
+			// cleaned.
+			for(int j = 0; j < ((ViewGroup)convertView).ChildCount; ++j) {
+				View nextChild = ((ViewGroup)convertView).GetChildAt(j);
+				nextChild.Pressed = false;
+			}
 		}
 
 		/// <summary>
@@ -253,6 +255,64 @@ namespace FortySevenDeg.SwipeListView
 				}
 			}
 		}
+
+
+		/// <summary>
+		/// Dismiss the specified position.
+		/// </summary>
+		/// <param name="position">Position.</param>
+		public void Dismiss(int position) {
+			int height = _touchListener.Dismiss(position);
+			if (height > 0) {
+				_touchListener.HandlerPendingDismisses(height);
+			} else {
+				int[] dismissPositions = new int[1];
+				dismissPositions[0] = position;
+				OnDismiss(dismissPositions);
+				_touchListener.ResetPendingDismisses();
+			}
+		}
+
+		/// <summary>
+		/// Dismisses items selected.
+		/// </summary>
+		public void DismissSelected() {
+			List<int> list = _touchListener.PositionsSelected;
+			int[] dismissPositions = new int[list.Count];
+			int height = 0;
+			for (int i = 0; i < list.Count; i++) {
+				int position = list[i];
+				dismissPositions[i] = position;
+				int auxHeight = _touchListener.Dismiss(position);
+				if (auxHeight > 0) {
+					height = auxHeight;
+				}
+			}
+			if (height > 0) {
+				_touchListener.HandlerPendingDismisses(height);
+			} else {
+				OnDismiss(dismissPositions);
+				_touchListener.ResetPendingDismisses();
+			}
+			_touchListener.ReturnOldActions();
+		}
+
+		/// <summary>
+		/// Opens the animate.
+		/// </summary>
+		/// <param name="position">Position.</param>
+		public void OpenAnimate(int position) {
+			_touchListener.OpenAnimate(position);
+		}
+
+		/// <summary>
+		/// Closes the animate.
+		/// </summary>
+		/// <param name="position">Position.</param>
+		public void CloseAnimate(int position) {
+			_touchListener.CloseAnimate(position);
+		}
+
 		#endregion
 
 		/// Notifies OnDismiss

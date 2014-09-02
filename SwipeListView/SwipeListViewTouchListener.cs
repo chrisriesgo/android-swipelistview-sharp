@@ -32,9 +32,11 @@ namespace FortySevenDeg.SwipeListView
 {
 	public class SwipeListViewTouchListener : Java.Lang.Object, View.IOnTouchListener, AbsListView.IOnScrollListener
 	{
+		private static int DISPLACE_CHOICE = 80;
+
 		private int _swipeFrontView = 0;
 		private int swipeBackView = 0;
-		private int _swipeRevealDismissView = 0;
+//		private int _swipeRevealDismissView = 0;
 
 		private Rect rect = new Rect();
 
@@ -72,10 +74,10 @@ namespace FortySevenDeg.SwipeListView
 		private bool _isFirstItem = false;
 		private bool _isLastItem = false;
 
-		public SwipeListViewTouchListener(SwipeListView swipeListView, int swipeFrontView, int swipeBackView, int swipeRevealDismissView) {
+		public SwipeListViewTouchListener(SwipeListView swipeListView, int swipeFrontView, int swipeBackView) {
 			this._swipeFrontView = swipeFrontView;
 			this.swipeBackView = swipeBackView;
-			_swipeRevealDismissView = swipeRevealDismissView;
+//			_swipeRevealDismissView = swipeRevealDismissView;
 			ViewConfiguration vc = ViewConfiguration.Get(swipeListView.Context);
 			slop = vc.ScaledTouchSlop;
 			SwipeClosesAllItemsWhenListMoves = true;
@@ -90,8 +92,8 @@ namespace FortySevenDeg.SwipeListView
 			SwipeActionRight = (int)SwipeListView.SwipeAction.Reveal;
 			LeftOffset = 0;
 			RightOffset = 0;
-			ChoiceOffset = 0;
-			RevealDismissThreshold = 0;
+//			ChoiceOffset = 0;
+//			RevealDismissThreshold = 0;
 			SwipeDrawableChecked = 0;
 			SwipeDrawableUnchecked = 0;
 		}
@@ -124,7 +126,7 @@ namespace FortySevenDeg.SwipeListView
 			}
 		}
 
-		public View RevealDismissView { get; set; }
+//		public View RevealDismissView { get; set; }
 
 		public bool IsListViewMoving { get; set; }
 
@@ -146,8 +148,8 @@ namespace FortySevenDeg.SwipeListView
 
 		public float RightOffset { get; set; }
 		public float LeftOffset { get; set; }
-		public float ChoiceOffset { get; set; }
-		public float RevealDismissThreshold { get; set; }
+//		public float ChoiceOffset { get; set; }
+//		public float RevealDismissThreshold { get; set; }
 
 		/// Set if all items opened will be closed when the user moves ListView
 		public bool SwipeClosesAllItemsWhenListMoves { get; set; }
@@ -203,7 +205,7 @@ namespace FortySevenDeg.SwipeListView
 			}
 		}
 
-		public bool SwipeAllowFling { get; set; }
+//		public bool SwipeAllowFling { get; set; }
 		#endregion 
 
 		public bool OpenedRight(int position)
@@ -234,11 +236,19 @@ namespace FortySevenDeg.SwipeListView
 		/// </summary>
 		/// <param name="position">Position.</param>
 		public void OpenAnimate(int position) {
-			OpenAnimate(_swipeListView.GetChildAt(position - _swipeListView.FirstVisiblePosition).FindViewById(_swipeFrontView), position);
+			var view = _swipeListView.GetChildAt(position - _swipeListView.FirstVisiblePosition).FindViewById(_swipeFrontView);
+			if (view != null)
+			{
+				OpenAnimate(view, position);
+			}
 		}
 
 		public void CloseAnimate(int position) {
-			CloseAnimate(_swipeListView.GetChildAt(position - _swipeListView.FirstVisiblePosition).FindViewById(_swipeFrontView), position);
+			var view = _swipeListView.GetChildAt(position - _swipeListView.FirstVisiblePosition).FindViewById(_swipeFrontView);
+			if(view != null)
+			{
+				CloseAnimate(view, position);
+			}
 		}
 
 		/// <summary>
@@ -286,7 +296,7 @@ namespace FortySevenDeg.SwipeListView
 		/// Dismiss the specified position.
 		/// </summary>
 		/// <param name="position">Position.</param>
-		protected int Dismiss(int position) {
+		public int Dismiss(int position) {
 			int start = _swipeListView.FirstVisiblePosition;
 			int end = _swipeListView.LastVisiblePosition;
 			View view = _swipeListView.GetChildAt(position - start);
@@ -317,9 +327,22 @@ namespace FortySevenDeg.SwipeListView
 		/// Reloads the swipe state in view.
 		/// </summary>
 		/// <param name="frontView">Front view.</param>
-		public void ReloadSwipeStateInView(View frontView) {
-			if(SwipeClosesAllItemsWhenListMoves){
+		/// <param name="position">Position.</param>
+		public void ReloadSwipeStateInView(View frontView, int position) {
+			if(!Opened(position))
+			{
 				frontView.TranslationX = 0f;
+			}
+			else
+			{
+				if(OpenedRight(position))
+				{
+					frontView.TranslationX = _swipeListView.Width;
+				}
+				else
+				{
+					frontView.TranslationX = -_swipeListView.Width;
+				}
 			}
 		}
 
@@ -331,6 +354,41 @@ namespace FortySevenDeg.SwipeListView
 		public bool IsChecked(int position) {
 			return _checked.ContainsKey(position) && _checked.FirstOrDefault(o => o.Key == position).Value;
 		}
+
+
+
+		/// <summary>
+		/// Gets the count selected.
+		/// </summary>
+		/// <returns>The count selected.</returns>
+		protected int GetCountSelected() {
+			int count = 0;
+			for (int i = 0; i < _checked.Count; i++) {
+				if (_checked[i]) {
+					count++;
+				}
+			}
+			#if DEBUG
+				Android.Util.Log.Debug("SwipeListView", "selected: " + count);
+			#endif
+			return count;
+		}
+
+		/// <summary>
+		/// Gets the positions selected.
+		/// </summary>
+		/// <returns>The positions selected.</returns>
+		protected List<int> GetPositionsSelected() {
+			var list = new List<int>();
+			for (int i = 0; i < _checked.Count; i++) {
+				if (_checked[i]) {
+					list.Add(i);
+				}
+			}
+			return list;
+		}
+
+
 
 		private void OpenAnimate(View view, int position) {
 			if (!Opened(position)) {
@@ -357,7 +415,9 @@ namespace FortySevenDeg.SwipeListView
 		/// <param name="swapRight">If set to <c>true</c> swap right.</param>
 		/// <param name="position">Position.</param>
 		private void GenerateAnimate(View view, bool swap, bool swapRight, int position) {
+			#if DEBUG
 			Android.Util.Log.Debug("SwipeListView", "swap: " + swap + " - swapRight: " + swapRight + " - position: " + position);
+			#endif
 			if (swipeCurrentAction == (int)SwipeListView.SwipeAction.Reveal) {
 				GenerateRevealAnimate(view, swap, swapRight, position);
 			}
@@ -366,9 +426,6 @@ namespace FortySevenDeg.SwipeListView
 			}
 			if (swipeCurrentAction == (int)SwipeListView.SwipeAction.Choice) {
 				GenerateChoiceAnimate(view, position);
-			}
-			if (swipeCurrentAction == (int)SwipeListView.SwipeAction.RevealDismiss) {
-				GenerateRevealDismissAnimate(view, swap, swapRight, position);
 			}
 		}
 
@@ -476,50 +533,6 @@ namespace FortySevenDeg.SwipeListView
 				.SetListener(listener);
 		}
 
-		/// <summary>
-		/// Generates the reveal + dismiss animation.
-		/// </summary>
-		/// <param name="view">View.</param>
-		/// <param name="swap">If set to <c>true</c> swap.</param>
-		/// <param name="swapRight">If set to <c>true</c> swap right.</param>
-		/// <param name="position">Position.</param>
-		private void GenerateRevealDismissAnimate(View view, bool swap, bool swapRight, int position) {
-			int moveTo = 0;
-			if (Opened(position)) {
-				if (!swap) {
-					moveTo = OpenedRight(position) ? (int) (viewWidth - RightOffset) : (int) (-viewWidth + LeftOffset);
-				}
-			} else {
-				if (swap) {
-					moveTo = swapRight ? (int) (viewWidth - RightOffset) : (int) (-viewWidth + LeftOffset);
-				}
-			}
-
-			var listener = new ObjectAnimatorListenerAdapter();
-
-			int alpha = 1;
-			if (swap) {
-				++dismissAnimationRefCount;
-				alpha = 0;
-			}
-
-			listener.AnimationEnd = async (animation) =>
-			{
-				if(swap) {
-					CloseOpenedItems();
-					await Task.Delay(Convert.ToInt32(AnimationTime));
-					PerformDismiss(view, position, true);
-				}
-				ResetCell();
-			};
-
-			view.Animate()
-				.TranslationX(moveTo)
-				.Alpha(alpha)
-				.SetDuration(_animationTime)
-				.SetListener(listener);
-		}
-
 		private void ResetCell() {
 			if (downPosition != ListView.InvalidPosition) {
 				if (swipeCurrentAction == (int)SwipeListView.SwipeAction.Choice) {
@@ -527,7 +540,7 @@ namespace FortySevenDeg.SwipeListView
 				}
 				FrontView.Clickable = Opened(downPosition);
 				FrontView.LongClickable = Opened(downPosition);
-				//FrontView = null;
+//				FrontView = null;
 				_backView = null;
 				downPosition = ListView.InvalidPosition;
 			}
@@ -563,7 +576,7 @@ namespace FortySevenDeg.SwipeListView
 			SwipeActionLeft = action;
 		}
 
-		protected void ReturnOldActions() {
+		public void ReturnOldActions() {
 			SwipeActionRight = oldSwipeActionRight;
 			SwipeActionLeft = oldSwipeActionLeft;
 		}
@@ -602,25 +615,13 @@ namespace FortySevenDeg.SwipeListView
 				ParentView.TranslationX = deltaX;
 				ParentView.Alpha = (float)Math.Max(0f, Math.Min(1f, 1f - 2f * Math.Abs(deltaX) / viewWidth));
 			} else if (swipeCurrentAction == (int)SwipeListView.SwipeAction.Choice) {
-				if ((swipingRight && deltaX > 0 && posX < ChoiceOffset)
-					|| (!swipingRight && deltaX < 0 && posX > -ChoiceOffset)
-					|| (swipingRight && deltaX < ChoiceOffset)
-					|| (!swipingRight && deltaX > -ChoiceOffset)) {
+				if ((swipingRight && deltaX > 0 && posX < DISPLACE_CHOICE)
+					|| (!swipingRight && deltaX < 0 && posX > -DISPLACE_CHOICE)
+					|| (swipingRight && deltaX < DISPLACE_CHOICE)
+					|| (!swipingRight && deltaX > -DISPLACE_CHOICE)) {
 					FrontView.TranslationX = deltaX;
 				}
-			} else if (swipeCurrentAction == (int)SwipeListView.SwipeAction.RevealDismiss) {
-				var threshold = Math.Abs(deltaX) / viewWidth;
-				if(threshold > RevealDismissThreshold) 
-				{
-					BackView.Visibility = ViewStates.Gone;
-					RevealDismissView.Visibility = ViewStates.Visible;
-				}
-				else {
-					BackView.Visibility = ViewStates.Visible;
-					RevealDismissView.Visibility = ViewStates.Gone;
-				}
-				FrontView.TranslationX = deltaX;
-			} 
+			}
 			else {
 				FrontView.TranslationX = deltaX;
 			}
@@ -634,13 +635,14 @@ namespace FortySevenDeg.SwipeListView
 		/// <param name="doPendingDismiss">If set to <c>true</c> do pending dismiss.</param>
 		protected void PerformDismiss(View dismissView, int dismissPosition, bool doPendingDismiss) {
 			ViewGroup.LayoutParams lp = dismissView.LayoutParameters;
+			EnableDisableViewGroup((ViewGroup)dismissView, false);
 			int originalHeight = dismissView.Height;
 
 			ValueAnimator animator = (ValueAnimator)ValueAnimator.OfInt(originalHeight, 1).SetDuration(_animationTime);
 
 			if (doPendingDismiss) {
-				var listener = new ObjectAnimatorListenerAdapter();
-				listener.AnimationEnd = (valueAnimator) =>
+				var pendingDismissListener = new ObjectAnimatorListenerAdapter();
+				pendingDismissListener.AnimationEnd = (valueAnimator) =>
 				{
 					--dismissAnimationRefCount;
 					if(dismissAnimationRefCount == 0) {
@@ -648,8 +650,14 @@ namespace FortySevenDeg.SwipeListView
 					}
 				};
 
-				animator.AddListener(listener);
+				animator.AddListener(pendingDismissListener);
 			}
+
+			var listener = new ObjectAnimatorListenerAdapter();
+			listener.AnimationEnd = (valueAnimator) =>
+			EnableDisableViewGroup((ViewGroup)dismissView, true);
+
+			animator.AddListener(listener);
 
 			var updateListener = new ObjectAnimatorUpdateListener();
 			updateListener.AnimationUpdate = (valueAnimator) =>
@@ -663,11 +671,11 @@ namespace FortySevenDeg.SwipeListView
 			animator.Start();
 		}
 
-		protected void ResetPendingDismisses() {
+		public void ResetPendingDismisses() {
 			pendingDismisses.Clear();
 		}
 
-		protected async void HandlerPendingDismisses(int originalHeight) {
+		public async void HandlerPendingDismisses(int originalHeight) {
 			await Task.Delay(Convert.ToInt32(_animationTime) + 100);
 			await Task.Run(() =>
 			{
@@ -700,6 +708,17 @@ namespace FortySevenDeg.SwipeListView
 			}
 
 			ResetPendingDismisses();
+		}
+
+		public static void EnableDisableViewGroup(ViewGroup viewGroup, bool enabled) {
+			int childCount = viewGroup.ChildCount;
+			for (int i = 0; i < childCount; i++) {
+				View view = viewGroup.GetChildAt(i);
+				view.Enabled = enabled;
+				if (view is ViewGroup) {
+					EnableDisableViewGroup((ViewGroup) view, enabled);
+				}
+			}
 		}
 
 		#region IOnTouchListener implementation
@@ -759,10 +778,6 @@ namespace FortySevenDeg.SwipeListView
 							{
 								BackView = child.FindViewById(swipeBackView);
 							}
-							if(_swipeRevealDismissView > 0)
-							{
-								RevealDismissView = child.FindViewById(_swipeRevealDismissView);
-							}
 							break;
 						}
 					}
@@ -809,16 +824,16 @@ namespace FortySevenDeg.SwipeListView
 						{
 							swap = false;
 						}
-						else if(SwipeAllowFling)
+						else
 						{
 							swap = true;
 						}
 					}
-					else if(velocityX > maxFlingVelocity)
-					{
-						swap = false;
-					}
-					else if((swipeCurrentAction == (int)SwipeListView.SwipeAction.RevealDismiss && Math.Abs(deltaX) > (RevealDismissThreshold * viewWidth)) || (swipeCurrentAction != (int)SwipeListView.SwipeAction.RevealDismiss && Math.Abs(deltaX) > viewWidth / 2))
+//					else if(velocityX > maxFlingVelocity)
+//					{
+//						swap = false;
+//					}
+					else if(Math.Abs(deltaX) > viewWidth / 2)
 					{
 						swap = true;
 						swapRight = deltaX > 0;
@@ -836,11 +851,11 @@ namespace FortySevenDeg.SwipeListView
 					downX = 0;
 				
 					// change clickable front view
-					if(swap)
-					{
-						FrontView.Clickable = Opened(downPosition);
-						FrontView.LongClickable = Opened(downPosition);
-					}
+//					if(swap)
+//					{
+//						FrontView.Clickable = Opened(downPosition);
+//						FrontView.LongClickable = Opened(downPosition);
+//					}
 
 					swiping = false;
 					break;
@@ -900,7 +915,9 @@ namespace FortySevenDeg.SwipeListView
 					{
 						swiping = true;
 						swipingRight = (deltaX > 0);
+						#if DEBUG
 						Android.Util.Log.Debug("SwipeListView", "deltaX: " + deltaX + " - swipingRight: " + swipingRight);
+						#endif
 						if(Opened(downPosition))
 						{
 							_swipeListView.OnStartClose(downPosition, swipingRight);
@@ -923,14 +940,6 @@ namespace FortySevenDeg.SwipeListView
 							else if (!swipingRight && SwipeActionLeft == (int)SwipeListView.SwipeAction.Choice) 
 							{
 								swipeCurrentAction = (int)SwipeListView.SwipeAction.Choice;
-							} 
-							else if (swipingRight && SwipeActionRight == (int)SwipeListView.SwipeAction.RevealDismiss) 
-							{
-								swipeCurrentAction = (int)SwipeListView.SwipeAction.RevealDismiss;
-							} 
-							else if (!swipingRight && SwipeActionLeft == (int)SwipeListView.SwipeAction.RevealDismiss) 
-							{
-								swipeCurrentAction = (int)SwipeListView.SwipeAction.RevealDismiss;
 							} 
 							else 
 							{
@@ -955,10 +964,7 @@ namespace FortySevenDeg.SwipeListView
 						{
 							deltaX += OpenedRight(downPosition) ? viewWidth - RightOffset : -viewWidth + LeftOffset;
 						}
-						if(deltaMode != 0f)
-						{
-							Move(deltaX);
-						}
+						Move(deltaX);
 						return true;
 					}
 					break;

@@ -11,14 +11,11 @@
         android:layout_height="wrap_content"
         swipe:swipeFrontView="@+id/front"
         swipe:swipeBackView="@+id/back"
-        swipe:swipeRevealDismissView="@+id/revealDismiss"
         swipe:swipeDrawableChecked="@drawable/choice_selected"
         swipe:swipeDrawableUnchecked="@drawable/choice_unselected"
         swipe:swipeCloseAllItemsWhenMoveList="true"
         swipe:swipeMode="both"
-        swipe:swipeActionRight="revealDismiss"
-        swipe:swipeActionLeft="choice"
-        swipe:swipeRevealDismissThreshold="@string/swipeRevealDismissThreshold"
-        swipe:swipeAllowFling="false"
-        swipe:swipeOpenOnLongPress="false" />
+        swipe:swipeActionRight="dismiss"
+        swipe:swipeActionLeft="reveal"
+        swipe:swipeOpenOnLongPress="true" />
 </LinearLayout>

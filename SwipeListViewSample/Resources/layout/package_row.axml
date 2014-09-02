@@ -14,19 +14,6 @@
             android:textColor="#ff4D4D4D"
             android:text="Continue swiping to dismiss" />
     </LinearLayout>
-    <LinearLayout
-        android:id="@+id/revealDismiss"
-        android:tag="revealDismiss"
-        style="@style/ListBackContent"
-        android:background="@drawable/choice_selected">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/example_row_b_action_3"
-            style="@style/ListButtonAction"
-            android:textColor="#ff4D4D4D"
-            android:text="Row will be dismissed" />
-    </LinearLayout>
     <RelativeLayout
         android:orientation="vertical"
         android:id="@+id/front"
@@ -38,15 +25,10 @@
         <TextView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_centerInParent="true"
             android:layout_toRightOf="@id/example_row_iv_image"
             style="@style/ListTitle"
             android:id="@+id/example_row_tv_title" />
-        <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/example_row_iv_image"
-            android:layout_below="@id/example_row_tv_title"
-            style="@style/ListDescription"
-            android:id="@+id/example_row_tv_description" />
     </RelativeLayout>
 </FrameLayout>

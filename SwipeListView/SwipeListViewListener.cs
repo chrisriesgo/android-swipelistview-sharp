@@ -33,17 +33,17 @@ namespace FortySevenDeg.SwipeListView
 			OnClickFrontView = (position) => {};
 			OnClickBackView = (position) => {};
 			OnDismiss = (position) => {};
-			OnChoiceChanged = (position, selected) => {};
-			OnChoiceStarted = () => {};
-			OnChoiceEnded = () => {};
-			OnFirstListItem = () => {};
-			OnLastListItem = () => {};
 			OnChangeSwipeMode = (position) => (int)SwipeListView.SwipeMode.Default;
 			OnChoiceChanged = (position, selected) => {};
 			OnChoiceStarted = () => {};
 			OnChoiceEnded = () => {};
 			OnFirstListItem = () => {};
 			OnLastListItem = () => {};
+//			OnChoiceChanged = (position, selected) => {};
+//			OnChoiceStarted = () => {};
+//			OnChoiceEnded = () => {};
+//			OnFirstListItem = () => {};
+//			OnLastListItem = () => {};
 		}
 
 		#region ISwipeListViewListener implementation
