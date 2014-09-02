@@ -59,6 +59,7 @@ namespace FortySevenDeg.SwipeListView
 		private bool swipingRight;
 		private VelocityTracker velocityTracker;
 		private int downPosition;
+		private int childPosition;
 		private View _frontView;
 		private View _backView;
 		private bool paused;
@@ -73,11 +74,13 @@ namespace FortySevenDeg.SwipeListView
 
 		private bool _isFirstItem = false;
 		private bool _isLastItem = false;
+		private bool _isLongPress = false;
+
+		private List<BackViewHolder> _backViews = new List<BackViewHolder>();
 
 		public SwipeListViewTouchListener(SwipeListView swipeListView, int swipeFrontView, int swipeBackView) {
 			this._swipeFrontView = swipeFrontView;
 			this.swipeBackView = swipeBackView;
-//			_swipeRevealDismissView = swipeRevealDismissView;
 			ViewConfiguration vc = ViewConfiguration.Get(swipeListView.Context);
 			slop = vc.ScaledTouchSlop;
 			SwipeClosesAllItemsWhenListMoves = true;
@@ -92,14 +95,15 @@ namespace FortySevenDeg.SwipeListView
 			SwipeActionRight = (int)SwipeListView.SwipeAction.Reveal;
 			LeftOffset = 0;
 			RightOffset = 0;
-//			ChoiceOffset = 0;
-//			RevealDismissThreshold = 0;
 			SwipeDrawableChecked = 0;
 			SwipeDrawableUnchecked = 0;
 		}
 
 		#region "Properties"
 		public View ParentView { get; set; }
+
+
+
 		public View FrontView 
 		{
 			get
@@ -109,11 +113,36 @@ namespace FortySevenDeg.SwipeListView
 			set
 			{
 				_frontView = value;
-				_frontView.Click += (sender, e) => _swipeListView.OnClickFrontView(downPosition);
-				if(SwipeOpenOnLongPress)
+
+				_frontView.Click -= FrontViewClick;
+				_frontView.Click += FrontViewClick;
+				_frontView.LongClick -= FrontViewLongClick;
+				_frontView.LongClick += FrontViewLongClick;
+			}
+		}
+
+		private void FrontViewClick (object sender, EventArgs e)
+		{
+			if(!_isLongPress)
+			{
+				_swipeListView.OnClickFrontView(downPosition);
+			}
+			_isLongPress = false;
+		}
+
+		private void FrontViewLongClick(object sender, Android.Views.View.LongClickEventArgs e)
+		{
+			if(SwipeOpenOnLongPress)
+			{
+				if(downPosition >= 0)
 				{
-					_frontView.LongClick += (sender, e) => OpenAnimate(_frontView, downPosition);
+					_isLongPress = true;
+					OpenAnimate(_frontView, childPosition);
 				}
+			}
+			else
+			{
+				SwapChoiceState(childPosition);
 			}
 		}
 			
@@ -122,11 +151,16 @@ namespace FortySevenDeg.SwipeListView
 			get { return this._backView; }
 			set {
 				this._backView = value;
-				this._backView.Click += (sender, e) => _swipeListView.OnClickBackView(downPosition);
+
+				this._backView.Click -= BackViewClick;
+				this._backView.Click += BackViewClick;
 			}
 		}
 
-//		public View RevealDismissView { get; set; }
+		private void BackViewClick(object sender, EventArgs e)
+		{
+			_swipeListView.OnClickBackView(downPosition);
+		}
 
 		public bool IsListViewMoving { get; set; }
 
@@ -511,7 +545,7 @@ namespace FortySevenDeg.SwipeListView
 			}
 
 			var listener = new ObjectAnimatorListenerAdapter();
-			listener.AnimationEnd = (animation) =>
+			listener.AnimationEnd = (animator) =>
 			{
 				_swipeListView.ResetScrolling();
 				if (swap) {
@@ -521,10 +555,35 @@ namespace FortySevenDeg.SwipeListView
 						_swipeListView.OnOpened(position, swapRight);
 						_openedRight[position] = swapRight;
 					} else {
+						if(_backViews != null && BackView != null)
+						{
+							_backViews.ForEach(b => 
+							{
+								if(!Opened(b.Position))
+								{
+									b.BackView.Visibility = ViewStates.Gone;
+									_backViews.Remove(b);
+								}
+							});
+//							_backViews.Clear();
+						}
 						_swipeListView.OnClosed(position, OpenedRight(position));
 					}
 				}
 				ResetCell();
+			};
+
+			listener.AnimationStart = (animator) =>
+			{
+				if(swap)
+				{
+					var aux = !Opened(position);
+					if (aux && _backViews != null && BackView != null)
+					{
+						BackView.Visibility = ViewStates.Visible;
+						_backViews.Add(new BackViewHolder(BackView, position));
+					}
+				}
 			};
 
 			view.Animate()
@@ -755,7 +814,7 @@ namespace FortySevenDeg.SwipeListView
 						child = _swipeListView.GetChildAt(i);
 						child.GetHitRect(rect);
 
-						int childPosition = _swipeListView.GetPositionForView(child);
+						childPosition = _swipeListView.GetPositionForView(child);
 
 						// dont allow swiping if this is on the header or footer or IGNORE_ITEM_VIEW_TYPE or enabled is false on the adapter
 						bool allowSwipe = _swipeListView.Adapter.IsEnabled(childPosition) && _swipeListView.Adapter.GetItemViewType(childPosition) >= 0;
@@ -767,7 +826,7 @@ namespace FortySevenDeg.SwipeListView
 							FrontView = viewHolder;
 
 							downX = e.RawX;
-							downPosition = childPosition;
+							downPosition = childPosition - _swipeListView.HeaderViewsCount;
 
 							FrontView.Clickable = !Opened(downPosition);
 							FrontView.LongClickable = !Opened(downPosition);
@@ -1065,6 +1124,13 @@ namespace FortySevenDeg.SwipeListView
 		{
 			AnimationEnd(animator);
 		}
+
+		public Action<Animator> AnimationStart { get; set; }
+		public override void OnAnimationStart(Animator animator)
+		{
+			if(AnimationStart == null) return;
+			AnimationStart(animator);
+		}
 	}
 
 	public class ObjectAnimatorUpdateListener : Java.Lang.Object, Android.Animation.ValueAnimator.IAnimatorUpdateListener
@@ -1082,6 +1148,18 @@ namespace FortySevenDeg.SwipeListView
 			AnimationUpdate(valueAnimator);
 		}
 		#endregion
+	}
+
+	public class BackViewHolder
+	{
+		public View BackView { get; set; }
+		public int Position { get; set; }
+
+		public BackViewHolder(View backView, int position)
+		{
+			BackView = backView;
+			Position = position;
+		}
 	}
 }
 

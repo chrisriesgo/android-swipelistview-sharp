@@ -17,5 +17,5 @@
         swipe:swipeMode="both"
         swipe:swipeActionRight="dismiss"
         swipe:swipeActionLeft="reveal"
-        swipe:swipeOpenOnLongPress="true" />
+        swipe:swipeOpenOnLongPress="false" />
 </LinearLayout>

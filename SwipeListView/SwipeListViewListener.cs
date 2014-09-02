@@ -39,11 +39,6 @@ namespace FortySevenDeg.SwipeListView
 			OnChoiceEnded = () => {};
 			OnFirstListItem = () => {};
 			OnLastListItem = () => {};
-//			OnChoiceChanged = (position, selected) => {};
-//			OnChoiceStarted = () => {};
-//			OnChoiceEnded = () => {};
-//			OnFirstListItem = () => {};
-//			OnLastListItem = () => {};
 		}
 
 		#region ISwipeListViewListener implementation
