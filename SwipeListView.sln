@@ -22,5 +22,6 @@ Global
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = SwipeListViewSample\SwipeListViewSample.csproj
+		version = 1.0.0.1
 	EndGlobalSection
 EndGlobal

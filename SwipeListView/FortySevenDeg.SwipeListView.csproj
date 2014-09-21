@@ -14,6 +14,8 @@
     <AndroidUseLatestPlatformSdk>True</AndroidUseLatestPlatformSdk>
     <AssemblyName>FortySevenDeg.SwipeListView</AssemblyName>
     <TargetFrameworkVersion>v4.4</TargetFrameworkVersion>
+    <ReleaseVersion>1.0.0.1</ReleaseVersion>
+    <Description>A C# Android List View implementation with drawable cells and many other swipe related features.</Description>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
