@@ -16,6 +16,7 @@ namespace SwipeListViewSample
 	public class MainActivity : FragmentActivity
 	{
 		SwipeListView _swipeListView;
+		DogsAdapter _adapter;
 
 		protected override void OnCreate(Bundle bundle)
 		{
@@ -25,30 +26,33 @@ namespace SwipeListViewSample
 			SetContentView(Resource.Layout.Main);
 			ActionBar.SetIcon(new ColorDrawable(Android.Graphics.Color.Transparent));
 
-			// Get our button from the layout resource,
-			// and attach an event to it
 			_swipeListView = FindViewById<SwipeListView>(Resource.Id.example_lv_list);
 
-			var adapter = new DogsAdapter(this, Dogs.GetDogData());
+			_adapter = new DogsAdapter(this, Dogs.GetDogData());
 
-			_swipeListView.SwipeListViewListener = SetupListener(adapter);
-			_swipeListView.Adapter = adapter;	
+			_swipeListView.FrontViewClicked += HandleFrontViewClicked;
+			_swipeListView.BackViewClicked += HandleBackViewClicked;
+			_swipeListView.Dismissed += HandleDismissed;
+
+			_swipeListView.Adapter = _adapter;
 		}
 
-		private ISwipeListViewListener SetupListener(DogsAdapter adapter)
+		void HandleFrontViewClicked (object sender, SwipeListViewClickedEventArgs e)
 		{
-			var listener = new SwipeListViewListener();
-			listener.OnDismiss = (reverseSortedPosition) =>
-			{
-				foreach (var i in reverseSortedPosition)
-				{
-					adapter.RemoveView(i);
-				}
-			};
-			listener.OnClickFrontView = (position) => RunOnUiThread(() => _swipeListView.Open(position));
-			listener.OnClickBackView = (position) => RunOnUiThread(() => _swipeListView.Close(position));
+			RunOnUiThread(() => _swipeListView.OpenAnimate(e.Position));
+		}
 
-			return listener;
+		void HandleBackViewClicked (object sender, SwipeListViewClickedEventArgs e)
+		{
+			RunOnUiThread(() => _swipeListView.CloseAnimate(e.Position));
+		}
+
+		void HandleDismissed (object sender, SwipeListViewDismissedEventArgs e)
+		{
+			foreach (var i in e.ReverseSortedPositions)
+			{
+				_adapter.RemoveView(i);
+			}
 		}
 	}
 
@@ -105,7 +109,7 @@ namespace SwipeListViewSample
 
 			view.Click += (sender, e) => 
 			{
-				((SwipeListView)parent).OnClickBackView(position);
+				((ISwipeListViewListener)parent).OnClickBackView(position);
 			};
 
 			return view;

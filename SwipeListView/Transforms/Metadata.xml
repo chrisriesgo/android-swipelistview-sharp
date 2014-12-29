@@ -1,0 +1,36 @@
+﻿<metadata>
+	<!--
+  This sample removes the class: android.support.v4.content.AsyncTaskLoader.LoadTask:
+  <remove-node path="/api/package[@name='android.support.v4.content']/class[@name='AsyncTaskLoader.LoadTask']" />
+  
+  This sample removes the method: android.support.v4.content.CursorLoader.loadInBackground:
+  <remove-node path="/api/package[@name='android.support.v4.content']/class[@name='CursorLoader']/method[@name='loadInBackground']" />
+  -->
+
+<!-- Change the Namespace to avoid Type/Namespace name collisions -->
+  <attr path="/api/package[@name='com.fortysevendeg.swipelistview']" name="managedName">FortySevenDeg.SwipeListView</attr>
+
+  <!-- Set parameter names -->
+  <attr path="/api/package[@name='com.fortysevendeg.swipelistview']/interface[@name='SwipeListViewListener']/method[@name='onChangeSwipeMode']/parameter[@name='p0']" name="name">position</attr>
+  <attr path="/api/package[@name='com.fortysevendeg.swipelistview']/interface[@name='SwipeListViewListener']/method[@name='onChoiceChanged']/parameter[@name='p0']" name="name">position</attr>
+  <attr path="/api/package[@name='com.fortysevendeg.swipelistview']/interface[@name='SwipeListViewListener']/method[@name='onChoiceChanged']/parameter[@name='p1']" name="name">selected</attr>
+  <attr path="/api/package[@name='com.fortysevendeg.swipelistview']/interface[@name='SwipeListViewListener']/method[@name='onClickBackView']/parameter[@name='p0']" name="name">position</attr>
+  <attr path="/api/package[@name='com.fortysevendeg.swipelistview']/interface[@name='SwipeListViewListener']/method[@name='onClickFrontView']/parameter[@name='p0']" name="name">position</attr>
+  <attr path="/api/package[@name='com.fortysevendeg.swipelistview']/interface[@name='SwipeListViewListener']/method[@name='onClosed']/parameter[@name='p0']" name="name">position</attr>
+  <attr path="/api/package[@name='com.fortysevendeg.swipelistview']/interface[@name='SwipeListViewListener']/method[@name='onClosed']/parameter[@name='p1']" name="name">selected</attr>
+  <attr path="/api/package[@name='com.fortysevendeg.swipelistview']/interface[@name='SwipeListViewListener']/method[@name='onDismiss']/parameter[@name='p0']" name="name">reverseSortedPositions</attr>
+  <attr path="/api/package[@name='com.fortysevendeg.swipelistview']/interface[@name='SwipeListViewListener']/method[@name='onMove']/parameter[@name='p0']" name="name">position</attr>
+  <attr path="/api/package[@name='com.fortysevendeg.swipelistview']/interface[@name='SwipeListViewListener']/method[@name='onMove']/parameter[@name='p1']" name="name">x</attr>
+  <attr path="/api/package[@name='com.fortysevendeg.swipelistview']/interface[@name='SwipeListViewListener']/method[@name='onOpened']/parameter[@name='p0']" name="name">position</attr>
+  <attr path="/api/package[@name='com.fortysevendeg.swipelistview']/interface[@name='SwipeListViewListener']/method[@name='onOpened']/parameter[@name='p1']" name="name">toRight</attr>
+  <attr path="/api/package[@name='com.fortysevendeg.swipelistview']/interface[@name='SwipeListViewListener']/method[@name='onStartClose']/parameter[@name='p0']" name="name">position</attr>
+  <attr path="/api/package[@name='com.fortysevendeg.swipelistview']/interface[@name='SwipeListViewListener']/method[@name='onStartClose']/parameter[@name='p1']" name="name">right</attr>
+  <attr path="/api/package[@name='com.fortysevendeg.swipelistview']/interface[@name='SwipeListViewListener']/method[@name='onStartOpen']/parameter[@name='p0']" name="name">position</attr>
+  <attr path="/api/package[@name='com.fortysevendeg.swipelistview']/interface[@name='SwipeListViewListener']/method[@name='onStartOpen']/parameter[@name='p1']" name="name">action</attr>
+  <attr path="/api/package[@name='com.fortysevendeg.swipelistview']/interface[@name='SwipeListViewListener']/method[@name='onStartOpen']/parameter[@name='p2']" name="name">right</attr>
+  <attr path="/api/package[@name='com.fortysevendeg.swipelistview']/class[@name='SwipeListView']/method[@name='setSwipeListViewListener']/parameter[@name='p0']" name="name">swipeListViewListener</attr>
+
+  <!-- Hide "private" Property fields // Skipping due to a duplicate field, method, or nested type name -->
+  <remove-node path="/api/package[@name='com.fortysevendeg.swipelistview']/class[@name='SwipeListView']/field[@name='TAG']" />
+
+</metadata>
